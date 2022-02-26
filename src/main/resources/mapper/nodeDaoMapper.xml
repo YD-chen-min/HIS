@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yandan.dao.NodeDao">
+    <resultMap id="nodeMap" type="Node">
+        <id column="id" property="id"/>
+        <result column="text" property="text"/>
+        <result column="pid" property="pid"/>
+        <association property="attributes" javaType="java.util.Map">
+            <result column="href" property="href"/>
+        </association>
+    </resultMap>
+   <select id="getNodes" parameterType="java.lang.Integer"  resultMap="nodeMap">
+       select id,text,pid,href from node where pid=#{pid}
+   </select>
+    <select id="getAll" resultMap="nodeMap">
+        select id,text,pid,href from node
+    </select>
+    <select id="getUserNodes" parameterType="java.lang.String" resultMap="nodeMap">
+        select id,text,pid,href from node where id in ( select node_id from role_node where role_id=#{roleId})
+    </select>
+</mapper>

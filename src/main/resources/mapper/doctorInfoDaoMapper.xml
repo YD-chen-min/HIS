@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yandan.dao.DoctorInfoDao">
+    <select id="getDoctorInfos" parameterType="java.util.Map" resultType="DoctorInfo">
+        select * from doctor_info
+        <where>
+            <foreach collection="paramMap.entrySet()" item="value" index="key" separator="and">
+                ${key} like concat('%',#{value},'%')
+            </foreach>
+        </where>
+    </select>
+    <insert id="insertDoctorInfo" parameterType="java.util.Map">
+        insert into doctor_info values(#{paramMap.workId},#{paramMap.id},#{paramMap.name},
+        #{paramMap.sex},#{paramMap.job},#{paramMap.deptId},#{paramMap.joinDate},
+        #{paramMap.remark})
+    </insert>
+    <update id="updateDoctorInfo" parameterType="java.util.Map">
+        update doctor_info  set
+        <foreach collection="paramMap.entrySet()" index="key" item="value" separator=",">
+            <if test="!(&quot;id&quot;.equals(key))">
+                ${key} =#{value}
+            </if>
+        </foreach>
+        where id=#{paramMap.id}
+    </update>
+    <delete id="deleteDoctorInfo" parameterType="java.util.List">
+        delete from doctor_info where work_id in
+        <foreach collection="workIds" open="(" close=")" item="workId" separator=",">
+            #{workId}
+        </foreach>
+    </delete>
+    <select id="getPageDoctorInfos" resultType="DoctorInfo" parameterType="java.util.Map">
+        select * from doctor_info
+        <where>
+            <foreach collection="paramMap.entrySet()" item="value" index="key" separator="and">
+                <if test="!(&quot;start&quot;.equals(key)||&quot;size&quot;.equals(key))">
+                    ${key} like concat('%', #{value}, '%')
+                </if>
+            </foreach>
+        </where>
+        limit #{paramMap.start},#{paramMap.size}
+    </select>
+    <select id="getDoctorInfoCounts" parameterType="java.util.Map" resultType="java.lang.Integer">
+        select count(*) from doctor_info
+        <where>
+            <foreach collection="paramMap.entrySet()" item="value" index="key" separator="and">
+                ${key} = #{value }
+            </foreach>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yandan.dao.RoleDao">
+    <select id="getRoles" resultType="java.util.Map">
+        select id,name from role
+    </select>
+    <select id="getPageRoles" parameterType="java.util.Map" resultType="Role">
+        select * from role limit #{paramMap.start} , #{paramMap.size}
+    </select>
+    <select id="getRoleCounts" resultType="java.lang.Integer">
+        select count(*) from role
+    </select>
+    <update id="updateRole" parameterType="java.util.Map">
+        update role set
+        <foreach collection="paramMap.entrySet()" item="value" index="key" separator=",">
+            <if test="!(&quot;id&quot;.equals(key))">
+                ${key} = #{value}
+            </if>
+        </foreach>
+        where id=#{paramMap.id}
+    </update>
+    <delete id="deleteRoles" parameterType="java.util.List">
+        delete from role where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+     </delete>
+    <insert id="addRolePower" parameterType="java.util.Map">
+        insert into role_node values(#{paramMap.roleId},#{paramMap.nodeId})
+    </insert>
+    <delete id="removeRolePower" parameterType="java.util.Map">
+        delete from role_node
+        <where>
+            <foreach collection="paramMap.entrySet()" item="value" index="key" separator="and">
+                ${key} = #{value}
+            </foreach>
+        </where>
+    </delete>
+    <insert id="insertRole" parameterType="java.util.Map">
+        insert into role values(#{paramMap.id},#{paramMap.name})
+    </insert>
+</mapper>

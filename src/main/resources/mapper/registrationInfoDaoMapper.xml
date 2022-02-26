@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yandan.dao.RegistrationInfoDao">
+    <insert id="insertRegistrationInfo" parameterType="java.util.HashMap">
+        insert into registration_info(id,card_id,cost_type,type,dept_id,doctor_work_id,first_or_last,status,initial_cost) values(#{paramMap.id},#{paramMap.cardId},#{paramMap.costType},#{paramMap.type},
+        #{paramMap.deptId},#{paramMap.doctorWorkId},#{paramMap.firstOrLast},#{paramMap.status},
+        #{paramMap.initialCost})
+    </insert>
+    <select id="getRegistrationInfos" parameterType="java.util.HashMap" resultType="RegistrationInfo">
+        select * from registration_info
+        <where>
+            <foreach collection="paramMap.entrySet()" index="key" item="value" separator="and">
+                <if test="!(&quot;start&quot;.equals(key)||&quot;size&quot;.equals(key))">
+                    ${key} like concat('%', #{value}, '%')
+                </if>
+            </foreach>
+        </where>
+           limit #{paramMap.start},#{paramMap.size}
+    </select>
+    <update id="updateRegistrationInfo" parameterType="java.util.HashMap">
+        update registration_info   set
+        <foreach collection="paramMap.entrySet()" index="key" item="value" separator=",">
+            <if test="!(&quot;id&quot;.equals(key))">
+             ${key} =#{value}
+            </if>
+        </foreach>
+        where id=#{paramMap.id}
+    </update>
+    <delete id="deleteRegistrationInfo" parameterType="java.util.List">
+        delete from registration_info where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="getRegistrationInfoCounts" parameterType="java.util.Map" resultType="java.lang.Integer">
+        select count(*) from registration_info
+        <where>
+            <foreach collection="paramMap.entrySet()" item="value" index="key" separator="and">
+                ${key} = #{value }
+            </foreach>
+        </where>
+    </select>
+</mapper>
